@@ -6,11 +6,15 @@ add_definitions(-std=c++11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Warnings
+if(WIN32)
+add_definitions(-w -Wall)
+else()
 add_definitions(-W -Wall -Wextra
   #-Wcast-qual
   -Wwrite-strings -Wunreachable-code -Wpointer-arith
   -Winit-self -Wredundant-decls
   -Wno-unused-parameter -Wno-unused-function)
+endif()
 
 find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
@@ -30,8 +34,13 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED thread system)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(OGRE_OV OGRE)
+if(WIN32)
+	find_package(OGRE_CV QUIET)
+	find_package(OGRE QUIET)
+else()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(OGRE_OV OGRE)
+endif()
 
 # Qt 4 or 5
 if("${rviz_QT_VERSION}" VERSION_LESS "5")
@@ -160,6 +169,22 @@ roslint_cpp()
 #############
 
 # Install libraries
+if(WIN32)
+install(
+  TARGETS
+    ${PROJECT_NAME}
+    ${PROJECT_NAME}_gui
+    ${PROJECT_NAME}_imarker_simple
+    ${PROJECT_NAME}_remote_control
+  LIBRARY DESTINATION
+    ${CATKIN_PACKAGE_LIB_DESTINATION}
+  ARCHIVE DESTINATION
+    ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION
+    ${CATKIN_GLOBAL_LIB_DESTINATION}
+  CONFIGURATIONS ${CMAKE_BUILD_TYPE}
+)
+else()
 install(
   TARGETS
     ${PROJECT_NAME}
@@ -169,6 +194,7 @@ install(
   LIBRARY DESTINATION
     ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
+endif()
 
 # Install header files
 install(DIRECTORY include/${PROJECT_NAME}/   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
