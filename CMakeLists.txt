@@ -38,8 +38,8 @@ if(WIN32)
 	find_package(OGRE_CV QUIET)
 	find_package(OGRE QUIET)
 else()
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(OGRE_OV OGRE)
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(OGRE_OV OGRE)
 endif()
 
 # Qt 4 or 5
